@@ -10,10 +10,31 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_30_072326) do
+ActiveRecord::Schema.define(version: 2021_05_30_090427) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "item_notes", force: :cascade do |t|
+    t.bigint "author_id"
+    t.text "note"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "item_id"
+    t.index ["author_id"], name: "index_item_notes_on_author_id"
+    t.index ["item_id"], name: "index_item_notes_on_item_id"
+  end
+
+  create_table "items", force: :cascade do |t|
+    t.string "name"
+    t.text "description"
+    t.bigint "creator_id"
+    t.bigint "manager_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["creator_id"], name: "index_items_on_creator_id"
+    t.index ["manager_id"], name: "index_items_on_manager_id"
+  end
 
   create_table "notifications", force: :cascade do |t|
     t.bigint "recipient_id"
@@ -39,4 +60,8 @@ ActiveRecord::Schema.define(version: 2021_05_30_072326) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "item_notes", "items"
+  add_foreign_key "item_notes", "users", column: "author_id"
+  add_foreign_key "items", "users", column: "creator_id"
+  add_foreign_key "items", "users", column: "manager_id"
 end
